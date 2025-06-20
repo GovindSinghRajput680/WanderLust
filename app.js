@@ -1,16 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const wrapAsync = require("./utils/wrapAsync.js");
-const ExpressError = require("./utils/ExpressError.js")
-const joi = require('joi');
-const {listingSchema,reviewSchema} = require("./schema.js")
-const Review = require("./models/review.js")
-
-
+const ExpressError = require("./utils/ExpressError.js");
+const listings = require("./routes/listing.js");
+const reviews= require("./routes/review.js");
+const session = require("express-session");
+const flash = require("connect-flash");
 
 const app = express();
 const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust'
@@ -37,78 +34,29 @@ app.get("/",(req,res)=>{
     res.send("server is woriking good.");
 });
 
-//Index Route
-app.get("/listings",wrapAsync(async (req,res,next)=>{
-    const allListings = await Listing.find();
-    res.render("listings/index.ejs",{allListings});
-}));
-
-//New Route
-app.get("/listings/new",(req,res)=>{
-    res.render("listings/new.ejs");
-})
-//Show Route
-app.get("/listings/:id",wrapAsync(async (req,res,next)=>{
-    const {id} = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
-    res.render("listings/show.ejs",{listing});
-}));
-//middleware for error handling
-const validateListing = (req,res,next)=>{
-    let {error}=listingSchema.validate(req.body);
-    if(error){
-        throw new ExpressError(400,error);
+const sessionOptions= {
+    secret:"mysecretkey",
+    resave:false,
+    saveUninitialized:true,
+    cookie:{
+        expires:Date.now()+7*24*60*60*1000,
+        maxAge:7*24*60*60*1000,
+        httpOnly:true
     }
-    else next();
-}
-const validateReview = (req,res,next)=>{
-    let {error}=reviewSchema.validate(req.body);
-    if(error){
-        throw new ExpressError(400,error);
-    }
-    else next();
-}
-//Create Route
-app.post("/listings/new",validateListing,wrapAsync(async (req,res,next)=>{
-    const newlisting = new Listing(req.body.listing);
-    await newlisting.save();
-    res.redirect("/listings");
-}));
+};
 
-//Edit route
-app.get("/listings/:id/edit",wrapAsync(async (req,res,next)=>{
-    const {id} = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/edit.ejs",{listing});
-}));
-
-//Update Route
-app.put("/listings/:id/edit",validateListing,wrapAsync(async (req,res,next)=>{
-    let {id} = req.params;
-    await Listing.findByIdAndUpdate(id,req.body.listing);
-    res.redirect(`/listings/${id}`);
-}));
-
-//Delete Route
-app.delete("/listings/:id",async (req,res)=>{
-    let {id }= req.params;
-    let deletedList = await Listing.findByIdAndDelete(id);
-    console.log(deletedList);
-    res.redirect("/listings");
+app.use(session(sessionOptions));
+app.use(flash());
+app.use((req,res,next)=>{
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    next();
 });
+//Listing all routes
+app.use("/listings",listings)
+//Review all routes
+app.use("/listings/:listing_id/reviews",reviews);
 
-//Reviews
-//New Review Route
-app.post("/listings/:id/reviews",validateReview,wrapAsync(async(req,res)=>{
-    let listing =await Listing.findById(req.params.id);
-    let newReview=  new Review(req.body.review);
-    await newReview.save();
-    listing.reviews.push(newReview);
-    await listing.save();
-    console.log(newReview);
-   // res.send("saved");
-    res.redirect(`/listings/${listing._id}`);
-}));
 app.all(/.*/, (req, res, next) => {
   next(new ExpressError(404, "Page Not Found"));
 });
@@ -117,17 +65,3 @@ app.use((err,req,res,next)=>{
     //console.log(err);
     res.status(statusCode).render("error.ejs",{message});
 });
-// app.get("/testing",async (req,res)=>{
-//         let sampleListing = new Listing(
-//         { title:"Rajput House",
-//             country:"India",
-//             location:"Shajapur,MP",
-//             price:100000,
-//             description:"Peacfull place"
-//         }
-//         );
-//         await sampleListing.save();
-//         console.log("data added successfully");
-//         res.send("tested successfully");
-//     }
-// );
