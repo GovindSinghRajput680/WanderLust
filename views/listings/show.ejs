@@ -8,19 +8,23 @@
             <img class="card-img-top  show-img" src="<%= listing.image %>" alt="lisiting_image">
             <div class="card-body">
             <p class="card-text">
-                <%= listing.description %>
-                <br> &#8377;<%= listing.price.toLocaleString('en-IN') %>/night
-                <br><%= listing.country %>
-                <br><%= listing.location %>
+                <i><p>Owned by <%= listing.owner.username %></i></p>
+                <p><%= listing.description %></p>
+                <p>&#8377;<%= listing.price.toLocaleString('en-IN') %>/night</p>
+                <p><%= listing.location %></p>
+                <p><%= listing.country %></p>
             </p>
-            <div class="btns">
-                <a href="/listings/<%=listing._id%>/edit" class="btn btn-dark edit-btn col-2">Edit</a>
-                <form action="/listings/<%=listing._id%>?_method=DELETE" method="post">
-                    <button class="btn btn-dark offset-4">Delete</button>
-                </form>
-            </div>
-            <hr>
+            <% if (currUser && currUser._id.equals(listing.owner._id)) { %>
+                <div class="btns">
+                    <a href="/listings/<%=listing._id%>/edit" class="btn btn-dark edit-btn col-2">Edit</a>
+                    <form action="/listings/<%=listing._id%>?_method=DELETE" method="post">
+                        <button class="btn btn-dark offset-4">Delete</button>
+                    </form>
+                </div>
+                <hr>
+            <% } %> 
             <div class="col-12 mt-3">
+                <% if(currUser) {%>
                 <h4>Leave a review</h4>
                 <form action="/listings/<%=listing._id%>/reviews" method="post" class="needs-validation" novalidate>
                      <div class="mb-1">
@@ -38,14 +42,16 @@
                     <button class="btn btn-outline-dark mt-3">Submit</button>
                 </form>
             </div>
-            <hr>
-            <p><b>All Reviews</b><p>
-            <ul>
+            <% } %>
+            <hr style="background-color: black;">
+            <%if(listing.reviews.length){%>
+                <p><b>All Reviews</b></p>
+            <%}%>
             <div class="row">
                 <% for (let review of listing.reviews) { %>
                 <div class="card col-5 mb-2 ms-2">
                     <div class="card-body">
-                        <h5 class="card-title">GSR</h5>
+                        <h5 class="card-title">@<%=review.author.username%></h5>
                         <p class="card-text"><%=review.comment%></p>
                         <p class="card-text"><%=review.rating%> stars</p>
                     </div>
