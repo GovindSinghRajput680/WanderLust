@@ -31,7 +31,7 @@ module.exports.renderLoginForm = (req,res)=>{
 }
 
 module.exports.login = (req,res)=>{
-        req.flash("success","You are successfully logged in");
+        req.flash("success","Welcome back on WanderLust");
         let url = res.locals.requestedUrl || "/listings"
         res.redirect(url);
 }

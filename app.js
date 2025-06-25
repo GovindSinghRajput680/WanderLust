@@ -1,3 +1,6 @@
+if(process.env.NODE_ENV != "production"){
+    require("dotenv").config();
+}
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
@@ -14,7 +17,7 @@ const LocalStrategy =require("passport-local");
 const User = require("./models/user.js");
 
 const app = express();
-const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust'
+const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust';
 const port = 8080;
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"/views"));
@@ -34,9 +37,9 @@ app.listen(port,()=>{
     console.log(`port is lilstening on ${port}.`);
 });
 
-app.get("/",(req,res)=>{
-    res.send("server is woriking good.");
-});
+// app.get("/",(req,res)=>{
+//     res.send("server is woriking good.");
+// });
 
 const sessionOptions= {
     secret:"mysecretkey",

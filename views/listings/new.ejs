@@ -4,7 +4,7 @@
     <div class="row">
      <div class="col-8 offset-2">
         <h2 style="text-align: center;">Create a new listing</h2>
-        <form action="/listings/new" method="post" class="needs-validation" novalidate>
+        <form action="/listings/new" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
         <div class ="mb-3">
           <label for="title" class="form-label">Title</label>
           <input type="text" placeholder="Enter Title" name="listing[title]" class="form-control" required>
@@ -39,15 +39,15 @@
             </div>
             <div class ="mb-3 col-md-8">
               <label for="price" class="form-label">Price</label>
-              <input  placeholder="Enter price" name="listing[price]" class="form-control" required>
+              <input  placeholder="Enter price" type="number" name="listing[price]" class="form-control" required>
               <div class="invalid-feedback">
                 Price should be valid.
               </div>
             </div>
           </div>
           <div class ="mb-3">
-            <label for="image" class="form-label">Image Link</label>
-            <input type="text" placeholder="Enter url for image" name="listing[image]" class="form-control">
+            <label for="image" class="form-label">Upload Image</label>
+            <input type="file" name="listing[image]" class="form-control" required>
           </div>
           <button class="btn btn-dark add-btn">Add</button>
 

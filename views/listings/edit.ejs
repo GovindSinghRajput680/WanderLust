@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-8">
             <h2 style="text-align: center;">Edit the listing</h2>
-            <form action="/listings/<%= listing._id %>/edit?_method=PUT" method="post" class="needs-validation" novalidate>
+            <form action="/listings/<%= listing._id %>?_method=PUT" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
                     <input type="text" placeholder="Enter Title" name="listing[title]" value="<%= listing.title %>" class="form-control" required>
@@ -36,15 +36,19 @@
                     </div>
                     <div class="mb-3 col-md-8">
                         <label for="price" class="form-label">Price</label>
-                        <input type="number" placeholder="Enter price" name="listing[price]" class="form-control" required value="<%= listing.price %>">
+                        <input type="number" placeholder="Enter price" type="number" name="listing[price]" class="form-control" required value="<%= listing.price %>">
                         <div class="invalid-feedback">
                             Price should be valid.
                         </div>
                     </div>
                 </div>
+                <div class ="mb-3">
+                    Original Image
+                    <img src=<%= originalImgUrl %> alt="original Image">
+                </div>
                 <div class="mb-3">
-                    <label for="image" class="form-label">Image Link</label>
-                    <input type="text" placeholder="Enter url for image" name="listing[image]" class="form-control" value="<%= listing.image %>" required>
+                    <label for="image" class="form-label">Upload New Image</label>
+                    <input type="file" placeholder="Enter url for image" name="listing[image]" class="form-control">
                     <div class="invalid-feedback">
                         Image Link should be valid.
                     </div>
